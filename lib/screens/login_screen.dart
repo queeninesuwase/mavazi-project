@@ -97,7 +97,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 24),
 
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    if(_loginFormKey.currentState!.validate()){
+                      //perform login then
+                      //Navigate to home screen
+                    }
+                  },
                   child: Text("Login", style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lightBlue,
@@ -111,7 +116,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 Row(children: [
                   Text("Don't have an account?"),
-                  TextButton(onPressed: (){}, child: Text("Sign Up"))
+                  TextButton(onPressed: (){
+        
+                  }, child: Text("Sign Up"))
                 ],
                 mainAxisAlignment: MainAxisAlignment.center,)
               ],
