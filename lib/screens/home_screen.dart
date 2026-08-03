@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mavazi/model/product.dart';
+import 'package:mavazi/screens/product_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -56,7 +58,13 @@ class _HomeScreenState extends State<HomeScreen> {
 class _HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("Home"));
+    return ListView.builder(
+      itemCount: dummyProducts.length,
+      itemBuilder: (context, index) {
+        var product = dummyProducts[index];
+        return ProductCard(product: product);
+      },
+    );
   }
 }
 
