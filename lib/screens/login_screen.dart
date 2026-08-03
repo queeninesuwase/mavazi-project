@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mavazi/screens/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,15 +34,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   fit: BoxFit.contain,
                 ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-                Text(
+                const Text(
                   "Login",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 TextFormField(
                   controller: _emailController,
@@ -64,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
 
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 TextFormField(
                   controller: _passwordController,
@@ -94,38 +95,55 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
 
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 ElevatedButton(
                   onPressed: () {
-                    if(_loginFormKey.currentState!.validate()){
+                    if (_loginFormKey.currentState!.validate()) {
                       //perform login then
                       //Navigate to home screen
                     }
                   },
-                  child: Text("Login", style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lightBlue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
+                  child: Text("Login", style: TextStyle(color: Colors.white)),
                 ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-                Row(children: [
-                  Text("Don't have an account?"),
-                  TextButton(onPressed: (){
-        
-                  }, child: Text("Sign Up"))
-                ],
-                mainAxisAlignment: MainAxisAlignment.center,)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Don't have an account?"),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignUpScreen(),
+                          ),
+                        );
+                      },
+                      child: Text("Sign Up"),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
