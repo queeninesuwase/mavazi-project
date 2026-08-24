@@ -60,6 +60,7 @@ class AuthApi {
     }
 
     var json = jsonDecode(response.body);
+    print("REFRESH RESPONSE: $json");
     return TokenResponse(json['accessToken'],
     json['refreshToken']);
   }

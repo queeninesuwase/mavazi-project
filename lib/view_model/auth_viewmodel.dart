@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mavazi/model/api_error.dart';
+import 'package:mavazi/model/token_response.dart';
 import 'package:mavazi/model/user.dart';
 import 'package:mavazi/services/auth_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum AuthStatus{
   unauthenticated,
+  authenticating,
   authenticated
 }
 
@@ -31,6 +33,7 @@ class AuthViewmodel  extends ChangeNotifier{
   }
 
   Future<bool> login(String username, String password)async {
+    authStatus = AuthStatus.authenticating;
     isloading = true;
     try{
       var result = await _authApi.login(username, password);
@@ -61,15 +64,30 @@ class AuthViewmodel  extends ChangeNotifier{
   }
 
   Future<void> autologin() async{
+    authStatus = AuthStatus.authenticating;
     final prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(ACCESS_TOKEN_KEY);
     String? refreshToken = prefs.getString(REFRESH_TOKEN_KEY);
-    if(accessToken!=null && refreshToken!=null){
-      authStatus = AuthStatus.authenticated;
-    }else{
+    if(accessToken !=null || refreshToken !=null){
       authStatus = AuthStatus.unauthenticated;
+      notifyListeners();
+      return;
     }
-    notifyListeners();
+    
+    try {
+      final user = await _authApi.fetchCurrentUser(accessToken!);
+      authStatus = AuthStatus.authenticated;
+    }catch(_) {
+     try {
+      final tokenResponse = await _authApi.refresh(refreshToken!);
+      accessToken = tokenResponse.accessToken;
+      refreshToken = tokenResponse.refreshToken;
+      await saveUserTokens(accessToken, refreshToken);
+      authStatus = AuthStatus.authenticated;
+     } catch (_) {
+      logout();
+     }
+    }
   }
   
   Future<void> logout() async{

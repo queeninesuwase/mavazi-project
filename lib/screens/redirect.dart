@@ -17,6 +17,8 @@ class Redirect  extends StatelessWidget {
           return LoginScreen();
         case AuthStatus.authenticated:
           return HomeScreen();
+        case AuthStatus.authenticating:
+          return CircularProgressIndicator();  
         
         }
     });
