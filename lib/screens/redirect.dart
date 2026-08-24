@@ -1,0 +1,29 @@
+import 'package:flutter/material.dart';
+import 'package:mavazi/screens/home_screen.dart';
+import 'package:mavazi/screens/login_screen.dart';
+import 'package:mavazi/viewmodel/auth_viewmodel.dart';
+import 'package:provider/provider.dart';
+
+class Redirect extends StatelessWidget {
+  const Redirect({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthViewModel>(
+      builder: (_, authViewModel, _) {
+        var status = authViewModel.authStatus;
+        print('AUTHSTATUS: $status');
+        switch (status) {
+          case AuthStatus.authenticated:
+            return HomeScreen();
+          case AuthStatus.unauthenticated:
+            return LoginScreen();
+          case AuthStatus.authenticating:
+            return Scaffold(
+              body: SafeArea(child: Center(child: CircularProgressIndicator())),
+            );
+        }
+      },
+    );
+  }
+}

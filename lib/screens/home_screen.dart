@@ -3,6 +3,7 @@ import 'package:mavazi/model/cart.dart';
 import 'package:mavazi/model/product.dart';
 import 'package:mavazi/screens/cart_card.dart';
 import 'package:mavazi/screens/product_card.dart';
+import 'package:mavazi/viewmodel/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -152,6 +153,15 @@ class _ProfileTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text("Profile"));
+    return Consumer<AuthViewModel>(
+      builder: (_, authViewmodel, _) {
+        return ElevatedButton(
+          onPressed: () {
+            authViewmodel.logout();
+          },
+          child: Text('Log out'),
+        );
+      },
+    );
   }
 }
