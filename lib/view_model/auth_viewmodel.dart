@@ -26,6 +26,7 @@ class AuthViewmodel  extends ChangeNotifier{
 
   AuthViewmodel({AuthApi? authApi}) {
     _authApi = authApi ?? AuthApi();
+    autologin();
 
   }
 
@@ -59,11 +60,26 @@ class AuthViewmodel  extends ChangeNotifier{
 
   }
 
-  Future<bool> tokensPresent() async{
+  Future<void> autologin() async{
     final prefs = await SharedPreferences.getInstance();
-    final access =  prefs.getString(ACCESS_TOKEN_KEY);
-    final refresh = prefs.getString(REFRESH_TOKEN_KEY);
-
-    return access!= null && refresh != null;
+    String? accessToken = prefs.getString(ACCESS_TOKEN_KEY);
+    String? refreshToken = prefs.getString(REFRESH_TOKEN_KEY);
+    if(accessToken!=null && refreshToken!=null){
+      authStatus = AuthStatus.authenticated;
+    }else{
+      authStatus = AuthStatus.unauthenticated;
+    }
+    notifyListeners();
   }
+  
+  Future<void> logout() async{
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove(ACCESS_TOKEN_KEY);
+    prefs.remove(REFRESH_TOKEN_KEY);
+    authStatus = AuthStatus.unauthenticated;
+    notifyListeners();
+  }
+
+
+  
 }

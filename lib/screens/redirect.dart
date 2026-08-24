@@ -9,8 +9,9 @@ class Redirect  extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthViewmodel>(builder: (context, authViewModel, child){
+    return Consumer<AuthViewmodel>(builder: (_, authViewModel, _){
       var status = authViewModel.authStatus;
+      print('AUTHSTATUS: status');
       switch(status){
         case AuthStatus.unauthenticated:
           return LoginScreen();

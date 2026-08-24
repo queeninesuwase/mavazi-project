@@ -116,15 +116,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           _passwordController.text,
                           );
 
-                          if(!mounted) return;
-                          if(success){
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder:(context)=> HomeScreen(),
-                              ),
-                              );
-
-                          }else{
+                          if(!context.mounted) return;
+                          if(!success){
                             final snackBar = SnackBar(
                               content: Text(authViewModel.errorMessage!),
                               );
