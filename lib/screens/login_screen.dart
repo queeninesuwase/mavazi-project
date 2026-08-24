@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mavazi/screens/home_screen.dart';
 import 'package:mavazi/screens/signup_screen.dart';
+import 'package:mavazi/view_model/auth_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,7 +15,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _loginFormKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _hidePassword = true;
 
@@ -43,11 +46,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 25),
                   TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
+                    controller: _usernameController,
+                    keyboardType: TextInputType.name,
                     decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.email_outlined),
-                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.person_2_outlined),
+                      labelText: 'Username',
                       border: OutlineInputBorder(),
                       isDense: true, 
                       contentPadding: EdgeInsets.symmetric(
@@ -57,11 +60,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return 'Please enter your username';
                       }
-                      if (!value.contains('@')) {
-                        return 'Please enter a valid email';
-                      }
+                      
                       return null;
                     },
                   ),
@@ -104,11 +105,34 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   const SizedBox(height: 24), 
-                  ElevatedButton(
-                    onPressed: () {
+
+                  Consumer<AuthViewmodel>
+                  (builder: (context, authViewModel,child){
+                    return ElevatedButton(
+                    onPressed: ()async {
                       if (_loginFormKey.currentState!.validate()) {
-                        // Perform login action
-                        //Navigate to home screen 
+                        var success = await authViewModel.login(
+                          _usernameController.text,
+                          _passwordController.text,
+                          );
+
+                          if(!mounted) return;
+                          if(success){
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder:(context)=> HomeScreen(),
+                              ),
+                              );
+
+                          }else{
+                            final snackBar = SnackBar(
+                              content: Text(authViewModel.errorMessage!),
+                              );
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(snackBar);
+                          }
+
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -118,8 +142,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text("Login", style: TextStyle(color: Colors.white)),  
-                  ),
+                    child: authViewModel.isloading 
+                    ? CircularProgressIndicator()
+                    :Text(
+                      "Login", style: TextStyle(color: Colors.white)),  
+                  );
+                  }),
                   
                   const SizedBox(height: 16), 
                   Row(
@@ -146,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 @override
 void dispose(){
-  _emailController.dispose();
+  _usernameController.dispose();
   _passwordController.dispose();
   super.dispose();
 }
