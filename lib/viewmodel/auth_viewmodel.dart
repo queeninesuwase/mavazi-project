@@ -10,7 +10,6 @@ class AuthViewModel extends ChangeNotifier {
   late final AuthApi _authApi;
   bool isLoading = false;
 
-  User? user;
   String? errorMesage;
   static const String ACCESS_TOKEN_KEY = "access_token_key";
   static const String REFRESH_TOKEN_KEY = "refresh_token_key";
@@ -18,8 +17,10 @@ class AuthViewModel extends ChangeNotifier {
 
   AuthViewModel({AuthApi? authApi}) {
     _authApi = authApi ?? AuthApi();
-    autoLogin();
+    _autoLogin();
   }
+
+
 
   Future<bool> login(String username, String password) async {
     authStatus = AuthStatus.authenticating;
@@ -27,8 +28,7 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
     try {
       var result = await _authApi.login(username, password);
-      user = result.user;
-      await saveUserTokens(result.accessToken, result.refreshToken);
+      await _saveUserTokens(result.accessToken, result.refreshToken);
       authStatus = AuthStatus.authenticated;
       return true;
     } on ApiError catch (e) {
@@ -45,13 +45,13 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> saveUserTokens(String accessToken, String refreshToken) async {
+  Future<void> _saveUserTokens(String accessToken, String refreshToken) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(ACCESS_TOKEN_KEY, accessToken);
     await prefs.setString(REFRESH_TOKEN_KEY, refreshToken);
   }
 
-  Future<void> autoLogin() async {
+  Future<void> _autoLogin() async {
     authStatus = AuthStatus.authenticating;
     final prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(ACCESS_TOKEN_KEY);
@@ -72,7 +72,7 @@ class AuthViewModel extends ChangeNotifier {
         final tokenResponse = await _authApi.refresh(refreshToken);
         accessToken = tokenResponse.accessToken;
         refreshToken = tokenResponse.refreshToken;
-        await saveUserTokens(accessToken, refreshToken);
+        await _saveUserTokens(accessToken, refreshToken);
         authStatus = AuthStatus.authenticated;
       } catch (_) {
         logout();
